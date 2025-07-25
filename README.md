@@ -41,6 +41,10 @@ Caso utilize outra comunidade SNMP, altere no host em:
 
 ## 🧑‍💻 Autor
 Template desenvolvido por Renan Pablo de Mattos.
+Impulsionando resultados e inovação com paixão e dedicação
+
+Linkedin: 
+https://www.linkedin.com/in/renan-pablo-9756293a/
 
 Contribuições, melhorias e sugestões são bem-vindas.
 
