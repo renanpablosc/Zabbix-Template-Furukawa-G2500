@@ -41,5 +41,6 @@ Caso utilize outra comunidade SNMP, altere no host em:
 
 ## 🧑‍💻 Autor
 Template desenvolvido por Renan Pablo de Mattos.
+
 Contribuições, melhorias e sugestões são bem-vindas.
 
