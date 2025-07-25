@@ -5,7 +5,7 @@
 > - SNMP configurado na OLT
 > - Comunidade SNMP padrão: `myisp`
 
-### OBSERVAÇÃO: Desenvolvi o template para meu cenário, confira os filtros, para ajustar ao seu cenário.
+### OBSERVAÇÃO: Desenvolvi o template para meu cenário, confira os filtros, para ajustar ao seu.
 
 ### 🌐 Informações gerais:
 - Uptime do equipamento
