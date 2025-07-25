@@ -40,6 +40,6 @@ Caso utilize outra comunidade SNMP, altere no host em:
 **Configuration → Hosts → SNMP interfaces**
 
 ## 🧑‍💻 Autor
-Template desenvolvido por Renan Pablo de Mattos
+Template desenvolvido por Renan Pablo de Mattos.
 Contribuições, melhorias e sugestões são bem-vindas.
 
