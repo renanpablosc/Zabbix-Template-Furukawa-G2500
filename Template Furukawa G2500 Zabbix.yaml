@@ -1,0 +1,394 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 8c694fb19ec6481fa76b9578b5df8064
+      name: Furukawa
+  templates:
+    - uuid: 6868cf6ed2414d1b9320496896315f9c
+      template: 'OLT Furukawa'
+      name: 'OLT Furukawa'
+      description: |
+        Modelo OLT Furukawa G2500
+        
+        By Renan Pablo de Mattos
+      groups:
+        - name: Furukawa
+      items:
+        - uuid: 9105c080eabc462db08fa88eb1aafc61
+          name: 'Total memory free'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.10428.9.1.9.1.1.1.16.0
+          key: fkFreeMem
+          history: 7d
+          units: B
+          tags:
+            - tag: component
+              value: memory
+        - uuid: f824ec120359486ea9f7db1a6de1fcff
+          name: 'Total memory of system'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.10428.9.1.9.1.1.1.14.0
+          key: fkTotalMem
+          history: 7d
+          units: B
+          tags:
+            - tag: component
+              value: memory
+        - uuid: 5e3d878aeb2c4191911672fb155f9737
+          name: 'Total memory used'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.10428.9.1.9.1.1.1.15.0
+          key: fkUsedMem
+          history: 7d
+          units: B
+          tags:
+            - tag: component
+              value: memory
+        - uuid: e087270e7e5848d7b8e20ed6e63d05c7
+          name: Uptime
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.1.3.0
+          key: sysUpTime
+          history: 90d
+          units: uptime
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: Uptime
+      discovery_rules:
+        - uuid: 7351418ab59c489aaa89130745ac645a
+          name: 'Descoberta de Interfaces OLT'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#IFOPERSTATUS},1.3.6.1.2.1.2.2.1.8,{#IFADMINSTATUS},1.3.6.1.2.1.2.2.1.7,{#IFALIAS},1.3.6.1.2.1.31.1.1.1.18,{#IFNAME},1.3.6.1.2.1.31.1.1.1.1,{#IFDESCR},1.3.6.1.2.1.2.2.1.2,{#IFTYPE},1.3.6.1.2.1.2.2.1.3]'
+          key: net.if.discovery
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#IFNAME}'
+                value: '^(port([1-9]|1[0-9]|20)-FX-1000|port4[1-6]-FX-(1000|10G))$'
+                formulaid: A
+          item_prototypes:
+            - uuid: 3dc02aa9eec74236acbf84f2004a19cc
+              name: 'Interface {#IFDESCR}: Inbound packets discarded'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.13.{#SNMPINDEX}'
+              key: 'net.if.in.discards[ifInDiscards.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: description
+                  value: '{#IFALIAS}'
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: ee68e075326b4b658aaf0b3280cabed6
+              name: 'Interface {#IFDESCR}: Inbound packets with errors'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.14.{#SNMPINDEX}'
+              key: 'net.if.in.errors[ifInErrors.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: description
+                  value: '{#IFALIAS}'
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 1bb8e831551348439ebeb7391128caab
+              name: 'Interface {#IFDESCR}: Bits received'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}'
+              key: 'net.if.in[ifHCInOctets.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: description
+                  value: '{#IFALIAS}'
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 4b61e5bd4d4046ebaeb39006d29bb03b
+              name: 'Interface {#IFDESCR}: Outbound packets discarded'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.19.{#SNMPINDEX}'
+              key: 'net.if.out.discards[ifOutDiscards.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: description
+                  value: '{#IFALIAS}'
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: ddb37f0ddb7a46188d25e12bf567100a
+              name: 'Interface {#IFDESCR}: Outbound packets with errors'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.20.{#SNMPINDEX}'
+              key: 'net.if.out.errors[ifOutErrors.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: description
+                  value: '{#IFALIAS}'
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 2f9e39986e3e479d9bdffb07a1be1b9a
+              name: 'Interface {#IFDESCR}: Bits sent'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}'
+              key: 'net.if.out[ifHCOutOctets.{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: description
+                  value: '{#IFALIAS}'
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: ec90b23df0d942c0b42cf629ce2fe3bf
+              name: 'Interface {#IFDESCR}: Speed'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}'
+              key: 'net.if.speed[ifHighSpeed.{#SNMPINDEX}]'
+              delay: 5m
+              history: 7d
+              trends: '0'
+              units: bps
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '1000000'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              tags:
+                - tag: description
+                  value: '{#IFALIAS}'
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 57a993d80b18488f8ebcb26f5d8531f5
+              name: 'Interface {#IFDESCR}: Operational admin'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.7.{#SNMPINDEX}'
+              key: 'net.if.status[ifAdminStatus.{#SNMPINDEX}]'
+              history: 7d
+              valuemap:
+                name: ifAdminStatus
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces Status Admin'
+            - uuid: 7f8636c8d30e42cfafd9ac0d276f053a
+              name: 'Interface {#IFDESCR}: Operational status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.8.{#SNMPINDEX}'
+              key: 'net.if.status[ifOperStatus.{#SNMPINDEX}]'
+              history: 7d
+              valuemap:
+                name: ifOperStatus
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces Status Operational'
+              trigger_prototypes:
+                - uuid: 4d2629cb8e544c9b934b48c848752a61
+                  expression: 'last(/OLT Furukawa/net.if.status[ifOperStatus.{#SNMPINDEX}])=2'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/OLT Furukawa/net.if.status[ifOperStatus.{#SNMPINDEX}])=1'
+                  name: 'Interface {#IFDESCR}: Link down'
+                  opdata: 'Current state: {ITEM.LASTVALUE1}'
+                  priority: HIGH
+                  manual_close: 'YES'
+            - uuid: 35c40172f70c4ab596b50bd0c3a33f4a
+              name: 'Interface {#IFDESCR}: Temperature'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.10428.9.1.101.2.6.1.1.3.{#SNMPINDEX}'
+              key: 'sensor.temp.value[TemperatureValue.{#SNMPINDEX}]'
+              delay: 3m
+              value_type: FLOAT
+              units: °C
+              tags:
+                - tag: component
+                  value: temperature
+              trigger_prototypes:
+                - uuid: 096a3421720d45b8a0e9151f0e633eba
+                  expression: 'last(/OLT Furukawa/sensor.temp.value[TemperatureValue.{#SNMPINDEX}])>{$TEMPERATURE_FK}'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/OLT Furukawa/sensor.temp.value[TemperatureValue.{#SNMPINDEX}])<={$TEMPERATURE_FK}'
+                  name: 'Interface {#IFDESCR}: {ITEM.LASTVALUE1} high temperature'
+                  opdata: 'Current state: {ITEM.LASTVALUE1}'
+                  priority: HIGH
+                  manual_close: 'YES'
+          graph_prototypes:
+            - uuid: eaf27423dfe642019151741c0f68184c
+              name: 'Traffic Interface {#IFDESCR}'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: 199C0D
+                  calc_fnc: ALL
+                  item:
+                    host: 'OLT Furukawa'
+                    key: 'net.if.in[ifHCInOctets.{#SNMPINDEX}]'
+                - sortorder: '1'
+                  drawtype: BOLD_LINE
+                  color: 3333FF
+                  calc_fnc: ALL
+                  item:
+                    host: 'OLT Furukawa'
+                    key: 'net.if.out[ifHCOutOctets.{#SNMPINDEX}]'
+                - sortorder: '2'
+                  drawtype: BOLD_LINE
+                  color: FFFF00
+                  calc_fnc: ALL
+                  item:
+                    host: 'OLT Furukawa'
+                    key: 'net.if.in.discards[ifInDiscards.{#SNMPINDEX}]'
+                - sortorder: '3'
+                  drawtype: BOLD_LINE
+                  color: FF0000
+                  calc_fnc: ALL
+                  item:
+                    host: 'OLT Furukawa'
+                    key: 'net.if.in.errors[ifInErrors.{#SNMPINDEX}]'
+                - sortorder: '4'
+                  drawtype: BOLD_LINE
+                  color: F4511E
+                  calc_fnc: ALL
+                  item:
+                    host: 'OLT Furukawa'
+                    key: 'net.if.out.discards[ifOutDiscards.{#SNMPINDEX}]'
+                - sortorder: '5'
+                  drawtype: BOLD_LINE
+                  color: D81B60
+                  calc_fnc: ALL
+                  item:
+                    host: 'OLT Furukawa'
+                    key: 'net.if.out.errors[ifOutErrors.{#SNMPINDEX}]'
+        - uuid: c68df118940c4e3ab98ffee208138e92
+          name: 'Descoberta de Interfaces OLT count ONU'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#IFOPERSTATUS},1.3.6.1.2.1.2.2.1.8,{#IFADMINSTATUS},1.3.6.1.2.1.2.2.1.7,{#IFALIAS},1.3.6.1.2.1.31.1.1.1.18,{#IFNAME},1.3.6.1.2.1.31.1.1.1.1,{#IFDESCR},1.3.6.1.2.1.2.2.1.2,{#IFTYPE},1.3.6.1.2.1.2.2.1.3]'
+          key: net.if.discovery.onu
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#IFNAME}'
+                value: '^port([1-9]|1[0-9]|20)-FX-1000$'
+                formulaid: A
+          item_prototypes:
+            - uuid: 4978103e5b5249ab8f0dd65595d0ada1
+              name: 'Interface {#IFDESCR}: ONUs Activated'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.10428.9.1.101.23.2.1.1.21.{#SNMPINDEX}'
+              key: 'net.if.count.active.onu[{#SNMPINDEX}]'
+              tags:
+                - tag: Application
+                  value: 'ONUs Activated'
+              trigger_prototypes:
+                - uuid: 073df9b510e74780ae34cf1256bed5ce
+                  expression: 'last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) / avg(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}],5m) < 0.75 and last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) > 0'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: |
+                    last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) / 
+                    avg(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}],5m) >= 0.70
+                  name: '25% Queda de ONUs - Antes: {ITEM.PREVVALUE} UP, Agora: {ITEM.LASTVALUE} UP , na {#IFDESCR}'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+                - uuid: a8fdec89e7e14bc28074d33b23e464b3
+                  expression: 'last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) / avg(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}],5m) < 0.50 and last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) > 0'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: |
+                    last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) / 
+                    avg(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}],5m) >= 0.55
+                  name: '50% Queda de ONUs - Antes: {ITEM.PREVVALUE} UP, Agora: {ITEM.LASTVALUE} UP , na {#IFDESCR}'
+                  priority: HIGH
+                - uuid: c90b1cc27cbd41ef884acdc6c4a1077e
+                  expression: 'last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) / avg(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}],5m) < 0.75 and last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) > 0'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: |
+                    last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}]) / 
+                    avg(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}],5m) >= 0.30
+                  name: '75% Queda de ONUs - Antes: {ITEM.PREVVALUE} UP, Agora: {ITEM.LASTVALUE} UP , na {#IFDESCR}'
+                  priority: HIGH
+                  manual_close: 'YES'
+                - uuid: 256e3f19f1bb407f82aa104762f7b833
+                  expression: 'last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}])=0'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/OLT Furukawa/net.if.count.active.onu[{#SNMPINDEX}])>=1'
+                  name: 'Interface {#IFDESCR} : Porta PON Down'
+                  priority: HIGH
+            - uuid: 9015d8d19dce41dcad385cdeef531c3b
+              name: 'Interface {#IFDESCR}: ONUs Inactive'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.10428.9.1.101.23.2.1.1.22.{#SNMPINDEX}'
+              key: 'net.if.count.inactive.onu[{#SNMPINDEX}]'
+              tags:
+                - tag: Application
+                  value: 'ONUs Inactive'
+      macros:
+        - macro: '{$TEMPERATURE_FK}'
+          value: '50'
+      valuemaps:
+        - uuid: bd9099407e784b2fb4867abaafa81c92
+          name: ifAdminStatus
+          mappings:
+            - value: '1'
+              newvalue: Ativada
+            - value: '2'
+              newvalue: Desativada
+        - uuid: b2c09ea3eddc40f3ba85452642653cd1
+          name: ifOperStatus
+          mappings:
+            - value: '1'
+              newvalue: Up
+            - value: '2'
+              newvalue: Down
+  graphs:
+    - uuid: 984f8360f23740ee90db13273df1f18c
+      name: 'Uso de memória'
+      graph_items:
+        - color: 0080FF
+          calc_fnc: ALL
+          item:
+            host: 'OLT Furukawa'
+            key: fkTotalMem
+        - sortorder: '1'
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'OLT Furukawa'
+            key: fkFreeMem
+        - sortorder: '2'
+          color: FF0000
+          calc_fnc: ALL
+          item:
+            host: 'OLT Furukawa'
+            key: fkUsedMem
