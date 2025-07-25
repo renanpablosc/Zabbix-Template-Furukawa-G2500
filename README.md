@@ -4,6 +4,7 @@
 > - Zabbix 6.0+ (compatível também com 7.0)
 > - SNMP configurado na OLT
 > - Comunidade SNMP padrão: `myisp`
+> OBSERVAÇÃO: Desenvolvi o template para meu cenário, confira os filtros, para ajustar ao seu cenário.
 
 ### 🌐 Informações gerais:
 - Uptime do equipamento
